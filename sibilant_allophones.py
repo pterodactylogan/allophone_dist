@@ -24,14 +24,16 @@ sibilant_frame = sibilant_frame[sibilant_frame["periodicGlottalSource"]
 lam = chr(840)
 
 # variable storing sibilant ordering
-sibilant_order = ["ʂ", "ʃˤ", "ʃˠ", "ʃ", "ɕ", "ʃʷ", "sˤ", "sʲ", "s",
-                  "s̪|s", "s̪ʲ", "s̪", "sʷ"]
+sibilant_order = ["ʂ", "ʃˤ", "ʃˠ", "ʃ", "ɕ", "ʃʷ", "sˤ", "sˠ", "sʲ", "s",
+                  "s̪|s", "s̪ʲ", "s̪ˤ", "s̪", "sʷ"]
 
-ignore = ["z", "ç", "h", "t", "ʒ", "ʐ", "ɦ", "ns", "θ", "ð", "c"]
+ignore = ["z", "ç", "h", "t", "ʒ", "ʐ", "ɦ", "n", "θ", "ð", "c",
+          "f", "d", "ɧ", "n"]
 
 # ejective, long, laminal, ??, syllabic, aspirated, glottalized, nasalized,
-# half-long
-diacritics_to_ignore = ["ʼ", "ː", lam, "͉", "̩", "ʰ", "ˀ", "̃", "ˑ", "ʷˠ"]
+# half-long, labial+velar, apical, voiced, labial+palatal
+diacritics_to_ignore = ["ʼ", "ː", lam, "͉", "̩", "ʰ", "ˀ", "̃", "ˑ", "ʷˠ",
+                        "̺", "̬", "ᶣ"]
 
 lang_groups = sibilant_frame.groupby("InventoryID", group_keys=True)
 
