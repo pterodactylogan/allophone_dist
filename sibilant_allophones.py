@@ -15,6 +15,9 @@ phoible_frame = pd.read_csv(phoible_url, usecols=["LanguageName",
 # Remove rows with no Allophone information
 phoible_frame.dropna(subset=["Allophones"], inplace=True)
 
+#phoible_frame = phoible_frame[phoible_frame["LanguageName"] == "Quechua"]
+#print(phoible_frame.iloc[0]["InventoryID"])
+
 #+strident, +continuant, -voice = unvoiced sibilants
 sibilant_frame = phoible_frame[phoible_frame["strident"] == "+"]
 sibilant_frame = sibilant_frame[sibilant_frame["continuant"] == "+"]
@@ -24,16 +27,16 @@ sibilant_frame = sibilant_frame[sibilant_frame["periodicGlottalSource"]
 lam = chr(840)
 
 # variable storing sibilant ordering
-sibilant_order = ["ʂ", "ʃˤ", "ʃˠ", "ʃ", "ɕ", "ʃʷ", "sˤ", "sˠ", "sʲ", "s",
-                  "s̪|s", "s̪ʲ", "s̪ˤ", "s̪", "sʷ"]
+sibilant_order = ["ʂ", "ʃˤ", "ʃˠ", "ʃ", "ɕ", "ɕ̟", "sˤ", "sˠ", "sʲ", "s",
+                  "s̟", "s̪|s", "s̪ʲ", "s̪ˤ", "s̪"]
 
 ignore = ["z", "ç", "h", "t", "ʒ", "ʐ", "ɦ", "n", "θ", "ð", "c",
-          "f", "d", "ɧ", "n"]
+          "f", "d", "ɧ", "n", "ɾ", "r", "i", "l"]
 
 # ejective, long, laminal, ??, syllabic, aspirated, glottalized, nasalized,
 # half-long, labial+velar, apical, voiced, labial+palatal
 diacritics_to_ignore = ["ʼ", "ː", lam, "͉", "̩", "ʰ", "ˀ", "̃", "ˑ", "ʷˠ",
-                        "̺", "̬", "ᶣ"]
+                        "̺", "̬", "ᶣ", "ʷʲ", "ʷ"]
 
 lang_groups = sibilant_frame.groupby("InventoryID", group_keys=True)
 
@@ -53,6 +56,7 @@ def getCanonicalSibilant(phoneme):
 
 num_well_behaved = 0
 num_crossing = 0
+num_ignored = 0
 for lang in lang_groups:
     lang_frame = lang[1]
     phoneme_list = [ph for ph in lang[1]["Phoneme"]]
@@ -78,7 +82,10 @@ for lang in lang_groups:
         allophones = lang_frame[lang_frame["Phoneme"] == ph].iloc[0]["Allophones"]
         for al in allophones.split():
             canon_al = getCanonicalSibilant(al)
-            if al == ph or canon_al=="":
+            if al == ph:
+                continue
+            if canon_al == "":
+                num_ignored += 1
                 continue
             al_i = sibilant_order.index(canon_al)
             if al_i >= left_bound and al_i <= right_bound:
@@ -89,6 +96,7 @@ for lang in lang_groups:
                 num_crossing += 1
 
 
-print("well behaved:", num_well_behaved)
-print("Crossing:", num_crossing)
+print("number well-behaved:", num_well_behaved)
+print("number ill-behaved:", num_crossing)
+print("number ignored:", num_ignored)
 # Test with specific languages

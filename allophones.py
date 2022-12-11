@@ -3,7 +3,6 @@ import plotly.express as px
 
 phoible_url = "https://github.com/phoible/dev/blob/master/data/phoible.csv?raw=true"
 
-#May need: Allophones, Marginal, InventoryID
 phoible_frame = pd.read_csv(phoible_url, usecols=["LanguageName",
                                                   "Phoneme",
                                                   "InventoryID",
