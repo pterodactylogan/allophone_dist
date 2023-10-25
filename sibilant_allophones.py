@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+import random
 
 phoible_url = "https://github.com/phoible/dev/blob/master/data/phoible.csv?raw=true"
 
@@ -23,19 +24,23 @@ sibilant_frame = phoible_frame[phoible_frame["strident"] == "+"]
 sibilant_frame = sibilant_frame[sibilant_frame["continuant"] == "+"]
 sibilant_frame = sibilant_frame[sibilant_frame["periodicGlottalSource"]
                                 == "-"]
-# laminal diacritic.
-lam = chr(840)
+# laminal diacritics.
+lam1 = chr(840)
+lam2 = chr(827)
 
 # variable storing sibilant ordering
 sibilant_order = ["ʂ", "ʃˤ", "ʃˠ", "ʃ", "ɕ", "ɕ̟", "sˤ", "sˠ", "sʲ", "s",
                   "s̟", "s̪|s", "s̪ʲ", "s̪ˤ", "s̪"]
+
+#FOR TESTING ONLY: shuffle sibilant order
+# random.shuffle(sibilant_order)
 
 ignore = ["z", "ç", "h", "t", "ʒ", "ʐ", "ɦ", "n", "θ", "ð", "c",
           "f", "d", "ɧ", "n", "ɾ", "r", "i", "l"]
 
 # ejective, long, laminal, ??, syllabic, aspirated, glottalized, nasalized,
 # half-long, labial+velar, apical, voiced, labial+palatal
-diacritics_to_ignore = ["ʼ", "ː", lam, "͉", "̩", "ʰ", "ˀ", "̃", "ˑ", "ʷˠ",
+diacritics_to_ignore = ["ʼ", "ː", lam1, lam2, "͉", "̩", "ʰ", "ˀ", "̃", "ˑ", "ʷˠ",
                         "̺", "̬", "ᶣ", "ʷʲ", "ʷ"]
 
 lang_groups = sibilant_frame.groupby("InventoryID", group_keys=True)
@@ -44,7 +49,7 @@ def getCanonicalSibilant(phoneme):
     for diac in diacritics_to_ignore:
         phoneme = phoneme.replace(diac, "")
     # 2 unicode values for dental symbol
-    phoneme = phoneme.replace(chr(827), chr(810))
+    # phoneme = phoneme.replace(chr(827), chr(810))
     if phoneme in sibilant_order:
         return phoneme
     if phoneme == "ʃʲ":
@@ -91,12 +96,16 @@ for lang in lang_groups:
             if al_i >= left_bound and al_i <= right_bound:
                 num_well_behaved += 1
             else:
-                print(lang_frame.iloc[0]["LanguageName"])
-                print(canonical_list)
+##                print(al)
+##                print(canon_ph)
+##                print(left_bound, right_bound)
+##                print(lang_frame.iloc[0]["LanguageName"])
+##                print(lang_frame.iloc[0]["InventoryID"])
+##                print(canonical_list)
                 num_crossing += 1
 
 
 print("number well-behaved:", num_well_behaved)
 print("number ill-behaved:", num_crossing)
-print("number ignored:", num_ignored)
+print(sibilant_order)
 # Test with specific languages
