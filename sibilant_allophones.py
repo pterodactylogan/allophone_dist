@@ -33,7 +33,7 @@ sibilant_order = ["ʂ", "ʃˤ", "ʃˠ", "ʃ", "ɕ", "ɕ̟", "sˤ", "sˠ", "sʲ",
                   "s̟", "s̪|s", "s̪ʲ", "s̪ˤ", "s̪"]
 
 #FOR TESTING ONLY: shuffle sibilant order
-# random.shuffle(sibilant_order)
+#random.shuffle(sibilant_order)
 
 ignore = ["z", "ç", "h", "t", "ʒ", "ʐ", "ɦ", "n", "θ", "ð", "c",
           "f", "d", "ɧ", "n", "ɾ", "r", "i", "l"]
@@ -62,6 +62,9 @@ def getCanonicalSibilant(phoneme):
 num_well_behaved = 0
 num_crossing = 0
 num_ignored = 0
+
+inv_sizes={}
+size_counts={}
 for lang in lang_groups:
     lang_frame = lang[1]
     phoneme_list = [ph for ph in lang[1]["Phoneme"]]
@@ -70,6 +73,10 @@ for lang in lang_groups:
     canonical_list = list(filter(lambda x: x != "", canonical_list))
     canonical_list = sorted(list(set(canonical_list)),
                             key=lambda x: sibilant_order.index(x))
+    
+    
+    inv_size = len(phoneme_list)
+    adds_als = False
     for ph in phoneme_list:
         canon_ph = getCanonicalSibilant(ph)
         if canon_ph == "":
@@ -95,6 +102,18 @@ for lang in lang_groups:
             al_i = sibilant_order.index(canon_al)
             if al_i >= left_bound and al_i <= right_bound:
                 num_well_behaved += 1
+
+                if canon_al in canonical_list:
+                    continue
+                
+                adds_als = True
+
+                if inv_size in size_counts:
+                    size_counts[inv_size]["good"] += 1
+                    size_counts[inv_size]["total"] += 1
+                else:
+                    size_counts[inv_size] = {"good": 1, "total": 1,
+                                             "num languages": 0}
             else:
 ##                print(al)
 ##                print(canon_ph)
@@ -104,8 +123,23 @@ for lang in lang_groups:
 ##                print(canonical_list)
                 num_crossing += 1
 
+                if canon_al in canonical_list:
+                    continue
+                
+                adds_als = True
+
+                if inv_size in size_counts:
+                    size_counts[inv_size]["total"] += 1
+                else:
+                    size_counts[inv_size] = {"good": 0, "total": 1,
+                                             "num languages": 0}
+
+    if adds_als:
+        size_counts[inv_size]["num languages"] += 1
+
 
 print("number well-behaved:", num_well_behaved)
 print("number ill-behaved:", num_crossing)
 print(sibilant_order)
+print(size_counts)
 # Test with specific languages
